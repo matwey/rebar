@@ -477,11 +477,12 @@ vcs_vsn_1(Vcs, Dir) ->
             end
     end.
 
-vcs_vsn_cmd(git)    -> "git describe --always --tags";
-vcs_vsn_cmd(hg)     -> "hg identify -i";
-vcs_vsn_cmd(bzr)    -> "bzr revno";
-vcs_vsn_cmd(svn)    -> "svnversion";
-vcs_vsn_cmd(fossil) -> "fossil info";
+vcs_vsn_cmd(git)    -> vcs_vsn_cmd(obs); 
+vcs_vsn_cmd(hg)     -> vcs_vsn_cmd(obs);
+vcs_vsn_cmd(bzr)    -> vcs_vsn_cmd(obs);
+vcs_vsn_cmd(svn)    -> vcs_vsn_cmd(obs);
+vcs_vsn_cmd(fossil) -> vcs_vsn_cmd(obs);
+vcs_vsn_cmd(obs)    -> "cat .rebar_vsn_obs";
 vcs_vsn_cmd({cmd, _Cmd}=Custom) -> Custom;
 vcs_vsn_cmd(Version) when is_list(Version) -> {plain, Version};
 vcs_vsn_cmd(_) -> unknown.
