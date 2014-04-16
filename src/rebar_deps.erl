@@ -370,27 +370,20 @@ find_deps(_Config, _Mode, [Other | _Rest], _Acc) ->
     ?ABORT("Invalid dependency specification ~p in ~s\n",
            [Other, rebar_utils:get_cwd()]).
 
+%%
+%% In Open Build Service we don't have internet access,
+%% we have to find all the deps locally.
+%%
 find_dep(Config, Dep) ->
-    %% Find a dep based on its source,
-    %% e.g. {git, "https://github.com/mochi/mochiweb.git", "HEAD"}
-    %% Deps with a source must be found (or fetched) locally.
-    %% Those without a source may be satisfied from lib dir (get_lib_dir).
     find_dep(Config, Dep, Dep#dep.source).
 
-find_dep(Config, Dep, undefined) ->
-    %% 'source' is undefined.  If Dep is not satisfied locally,
-    %% go ahead and find it amongst the lib_dir's.
+find_dep(Config, Dep, Source) ->
     case find_dep_in_dir(Config, Dep, get_deps_dir(Config, Dep#dep.app)) of
         {_Config1, {avail, _Dir}} = Avail ->
             Avail;
         {Config1, {missing, _}} ->
             find_dep_in_dir(Config1, Dep, get_lib_dir(Dep#dep.app))
-    end;
-find_dep(Config, Dep, _Source) ->
-    %% _Source is defined.  Regardless of what it is, we must find it
-    %% locally satisfied or fetch it from the original source
-    %% into the project's deps
-    find_dep_in_dir(Config, Dep, get_deps_dir(Config, Dep#dep.app)).
+    end.
 
 find_dep_in_dir(Config, _Dep, {false, Dir}) ->
     {Config, {missing, Dir}};
