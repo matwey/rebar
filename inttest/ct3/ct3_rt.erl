@@ -40,7 +40,7 @@ files() ->
 
 run(_Dir) ->
     {ok, _} = retest:sh("./rebar compile ct -v",
-                        [{env, [{"ERL_FLAGS", "-name ct_rt3"}]}]),
+                        [{env, [{"ERL_FLAGS", "-smp"}]}]),
     ok.
 
 %%
